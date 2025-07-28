@@ -1,0 +1,9 @@
+/.history/
+__pycache__/
+
+*.py[cod]
+*$py.class
+
+/man_in_the_pit/assets/**/*.xcf
+
+/.vscode/

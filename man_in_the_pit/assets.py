@@ -1,0 +1,9 @@
+# assets.py
+
+#HERO_IDLE
+
+#HERO_RUN
+
+#SLIME
+
+#SLIME_BOSS
