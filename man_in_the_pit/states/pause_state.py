@@ -1,5 +1,4 @@
 # pause_state
-
 import pygame
 import sys
 from man_in_the_pit.states.state import BaseState

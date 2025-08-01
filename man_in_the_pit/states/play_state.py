@@ -1,5 +1,4 @@
 # play_state
-
 import pygame
 import sys
 import random
@@ -18,7 +17,7 @@ from man_in_the_pit.entities.bullet import Bullet
 from man_in_the_pit.entities.weapon import Shotgun, Pistol, SubmachineGun
 
 class PlayState(BaseState):
-    def __init__(self, manager):
+    def __init__(self, manager, hero):
         super().__init__(manager)
 
         self.elapsed_time = 0.0
@@ -28,7 +27,7 @@ class PlayState(BaseState):
         self.bg_img = pygame.image.load("man_in_the_pit/assets/background2.png").convert()
 
         # Main character
-        self.hero = Player()
+        self.hero = hero
         self.hero.stamina = self.hero.max_stamina
 
         # Ammo icons

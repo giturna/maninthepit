@@ -3,6 +3,7 @@
 import pygame
 import sys
 from man_in_the_pit.states.state import BaseState
+from man_in_the_pit.states.loadout_state import LoadoutState
 from man_in_the_pit.states.play_state import PlayState
 from man_in_the_pit.settings import SCREEN_WIDTH, SCREEN_HEIGHT
 
@@ -19,7 +20,7 @@ class MenuState(BaseState):
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if self.text_play_rect.collidepoint(event.pos):
-                    self.manager.change_state(PlayState(self.manager))
+                    self.manager.change_state(LoadoutState(self.manager))
                 if self.text_quit_rect.collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()

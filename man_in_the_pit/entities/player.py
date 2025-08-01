@@ -61,27 +61,8 @@ class Player(Character):
         self.dash_dir_y = 0
 
         # Weapon
-        self.weapon = Pistol(self)
+        self.weapon = None
         self._aim_deg = 0.0
-        if isinstance(self.weapon, Pistol):
-            self.arm_img_right = pygame.image.load("man_in_the_pit/assets/weapons/pistol_arm.png").convert_alpha()
-            self.arm_pivot_r = (30, 27)
-            self.muzzle_ofs_r = (58, 24)
-            
-        elif isinstance(self.weapon, Shotgun):
-            self.arm_img_right = pygame.image.load("man_in_the_pit/assets/weapons/shotgun_arm.png").convert_alpha()
-            self.arm_pivot_r = (30, 27)
-            self.muzzle_ofs_r = (60, 27)
-        
-        else: # Submashinegun
-            self.arm_img_right = pygame.image.load("man_in_the_pit/assets/weapons/pistol_arm.png").convert_alpha()
-            self.arm_pivot_r = (30, 27)
-            self.muzzle_ofs_r = (58, 24)
-        
-        self.arm_img_left  = pygame.transform.flip(self.arm_img_right, True, False)
-        w = self.arm_img_right.get_width()
-        self.arm_pivot_l   = (w - self.arm_pivot_r[0],  self.arm_pivot_r[1])
-        self.muzzle_ofs_l  = (w - self.muzzle_ofs_r[0], self.muzzle_ofs_r[1])
             
 
         # Create Animation
@@ -101,6 +82,31 @@ class Player(Character):
 
         self.current_anim = self.idle_anim
         self.current_run = self.run_anim["front"]
+
+
+    def _apply_weapon_skin(self):
+        if isinstance(self.weapon, Pistol):
+            img_path = "man_in_the_pit/assets/weapons/pistol_arm.png"
+            self.arm_pivot_r  = (30, 27)
+            self.muzzle_ofs_r = (58, 24)
+
+        elif isinstance(self.weapon, Shotgun):
+            img_path = "man_in_the_pit/assets/weapons/shotgun_arm.png"
+            self.arm_pivot_r  = (30, 27)
+            self.muzzle_ofs_r = (60, 27)
+
+        else:  # SubmachineGun
+            img_path = "man_in_the_pit/assets/weapons/submachinegun_arm.png"
+            self.arm_pivot_r  = (30, 27)
+            self.muzzle_ofs_r = (58, 24)
+
+        # load sprite and mirror it
+        self.arm_img_right = pygame.image.load(img_path).convert_alpha()
+        self.arm_img_left  = pygame.transform.flip(self.arm_img_right, True, False)
+
+        w = self.arm_img_right.get_width()
+        self.arm_pivot_l   = (w - self.arm_pivot_r[0],  self.arm_pivot_r[1])
+        self.muzzle_ofs_l  = (w - self.muzzle_ofs_r[0], self.muzzle_ofs_r[1])
 
 
     def move_up(self, dt):
