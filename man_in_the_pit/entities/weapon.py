@@ -7,10 +7,14 @@ from man_in_the_pit.settings import FPS
 class Weapon:
     def __init__(self, owner, fire_rate,
                  magazine_size,
-                 reload_time = 1.5):
+                 reload_time = 1.5,
+                 spread_deg  = 0.0):
         self.owner = owner
         self.cooldown = 0.0
         self.fire_delay = 1.0 / fire_rate        # örn. 2 fps = 0.5 sn
+
+        # --------------- recoil
+        self.spread_rad = math.radians(spread_deg)
 
         # --- Ammo / reload ---
         self.mag_size     = magazine_size   # magazine size
@@ -18,6 +22,14 @@ class Weapon:
         self.reload_time  = reload_time
         self.is_reloading = False
         self.reload_timer = 0.0
+    
+    def _dir_with_spread(self, origin, target):
+        ox, oy = origin
+        tx, ty = target
+        ang = math.atan2(ty-oy, tx-ox)
+        if self.spread_rad:
+            ang += random.uniform(-self.spread_rad/2, self.spread_rad/2)
+        return math.cos(ang), math.sin(ang)
 
     def update(self, dt):
         # Cooldown
@@ -69,12 +81,14 @@ class Pistol(Weapon):
                 self.reload()
             return
 
-        # mermi üret
+        # create bullet
         ox, oy = self.owner.get_muzzle_pos()
-        mx, my = target_pos
+        dx, dy = self._dir_with_spread((ox, oy), target_pos)
+
+        # mx, my = target_pos
         b = Bullet(ox, oy, 4, 4, (255,255,255),
                    self.bullet_speed, self.bullet_damage)
-        b.set_direction(mx, my)
+        b.direction_x, b.direction_y = dx, dy
         bullet_list.append(b)
 
         self.ammo     -= 1               # reduce the number of bullets fired from the magazine
@@ -183,9 +197,11 @@ class SubmachineGun(Weapon):
     def __init__(self, owner,
                  bullet_speed  = 1200,   # px/s
                  bullet_damage = 20,
-                 fire_rate     = 15.0):
+                 fire_rate     = 15.0,
+                 spread_deg    = 10.0):
         super().__init__(owner, fire_rate,
-                         magazine_size=30)
+                         magazine_size=30,
+                         spread_deg = spread_deg)
         self.bullet_speed  = bullet_speed
         self.bullet_damage = bullet_damage
         self.automatic     = True        #  ←  keep the button pressed to fire full auto
@@ -198,11 +214,12 @@ class SubmachineGun(Weapon):
             return
 
         ox, oy = self.owner.get_muzzle_pos()
-        mx, my = target_pos
+        dx, dy = self._dir_with_spread((ox, oy), target_pos)
+        # mx, my = target_pos
 
         b = Bullet(ox, oy, 4, 4, (255, 255, 255),  # pistol bullet (for now)
                    self.bullet_speed, self.bullet_damage)
-        b.set_direction(mx, my)
+        b.direction_x, b.direction_y = dx, dy
         bullet_list.append(b)
 
         self.ammo    -= 1

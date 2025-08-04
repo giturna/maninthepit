@@ -98,7 +98,7 @@ class Player(Character):
         else:  # SubmachineGun
             img_path = "man_in_the_pit/assets/weapons/submachinegun_arm.png"
             self.arm_pivot_r  = (30, 27)
-            self.muzzle_ofs_r = (58, 24)
+            self.muzzle_ofs_r = (60, 20)
 
         # load sprite and mirror it
         self.arm_img_right = pygame.image.load(img_path).convert_alpha()
