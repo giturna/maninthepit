@@ -109,19 +109,27 @@ class Shotgun(Weapon):
                  bullet_speed = 1200,
                  bullet_damage = 18,
                  fire_rate = 1.5):
+        self.shell_reload_time = 0.40
         super().__init__(owner, fire_rate,
-                         magazine_size = 6)      # mag. size
+                         magazine_size = 6,
+                         reload_time=self.shell_reload_time)      # mag. size
 
         self.pellets       = pellets
         self.spread_rad    = math.radians(spread_deg)
         self.bullet_speed  = bullet_speed
         self.bullet_damage = bullet_damage
 
+        # -------------------------------  RELOAD ANIM.
+        IMG_DIR      = "man_in_the_pit/assets"
+        anim_speed  = 4 / self.shell_reload_time
+        self.reload_anim = Animation.from_dir(f"{IMG_DIR}/shotgun_reload", anim_speed, pattern="*.png")
+
     def fire(self, target_pos, bullet_list):
         if not self.can_fire():
             if self.ammo == 0:
                 self.reload()
             return
+        self.is_reloading = False
 
         ox, oy = self.owner.get_muzzle_pos()
         mx, my = target_pos
@@ -141,6 +149,34 @@ class Shotgun(Weapon):
         self.cooldown = self.fire_delay
         if self.ammo == 0:
             self.reload()
+
+    # ------------------------------------------
+    def reload(self):
+        if self.is_reloading or self.ammo == self.mag_size:
+            return
+        self.is_reloading = True
+        self.reload_timer = self.shell_reload_time
+        self.reload_anim.current_index = 0
+        self.reload_anim.timer = 0.0
+
+    # ------------------------------------------
+    def update(self, dt):
+        # cd counter
+        if self.cooldown > 0:
+            self.cooldown -= dt
+
+        if self.is_reloading:
+            self.reload_timer -= dt
+            self.reload_anim.update(dt)
+
+            if self.reload_timer <= 0:
+                self.ammo += 1
+                if self.ammo < self.mag_size:
+                    self.reload_timer += self.shell_reload_time
+                    self.reload_anim.current_index = 0
+                    self.reload_anim.timer = 0.0
+                else:
+                    self.is_reloading = False
 
 
 class SubmachineGun(Weapon):
